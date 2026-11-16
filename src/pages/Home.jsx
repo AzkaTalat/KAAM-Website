@@ -1,4 +1,5 @@
 
+import { Link } from 'react-router-dom';
 import {
   FaSearch,
   FaLaptopCode,
@@ -62,9 +63,9 @@ function Home() {
               </p>
 
               <div className="hero-buttons">
-                <a href="#get-started" className="btn btn-primary btn-lg">
+                <Link to="/signup" className="btn btn-primary btn-lg">
                   Find Work <FaArrowRight className="ms-2" />
-                </a>
+                </Link>
 
                 <a href="#categories" className="btn btn-outline-primary btn-lg">
                   Explore Services
@@ -86,6 +87,7 @@ function Home() {
                     <small>Find opportunities</small>
                     <h3>What do you need?</h3>
                   </div>
+
                   <div className="hero-card-icon">
                     <FaBriefcase />
                   </div>
@@ -99,15 +101,16 @@ function Home() {
                   />
                 </div>
 
-                <a href="#categories" className="btn btn-primary w-100 mt-3">
+                <Link to="/signup" className="btn btn-primary w-100 mt-3">
                   Explore Opportunities
-                </a>
+                </Link>
 
                 <div className="mini-info">
                   <div>
                     <FaUsers />
                     <span>For Clients</span>
                   </div>
+
                   <div>
                     <FaUserTie />
                     <span>For Workers</span>
@@ -137,6 +140,7 @@ function Home() {
             {categories.map((category, index) => (
               <div className="col-md-6 col-lg-3" key={index}>
                 <div className="category-card">
+
                   <div className="category-icon">
                     {category.icon}
                   </div>
@@ -144,9 +148,10 @@ function Home() {
                   <h5>{category.title}</h5>
                   <p>{category.description}</p>
 
-                  <a href="#get-started">
+                  <Link to="/signup">
                     Explore <FaArrowRight />
-                  </a>
+                  </Link>
+
                 </div>
               </div>
             ))}
@@ -172,6 +177,7 @@ function Home() {
                 <div className="process-icon">
                   <FaUserTie />
                 </div>
+
                 <span className="step-number">01</span>
                 <h4>Create Your Account</h4>
                 <p>
@@ -185,6 +191,7 @@ function Home() {
                 <div className="process-icon">
                   <FaSearch />
                 </div>
+
                 <span className="step-number">02</span>
                 <h4>Find Your Match</h4>
                 <p>
@@ -198,6 +205,7 @@ function Home() {
                 <div className="process-icon">
                   <FaHandshake />
                 </div>
+
                 <span className="step-number">03</span>
                 <h4>Start Working</h4>
                 <p>
@@ -217,21 +225,26 @@ function Home() {
 
             <div className="col-lg-6">
               <div className="about-visual">
+
                 <div className="about-main-icon">
                   <FaBriefcase />
                 </div>
+
                 <div className="about-floating-card">
                   <FaCheckCircle />
+
                   <div>
                     <strong>Opportunities for Everyone</strong>
                     <small>Connect. Work. Grow.</small>
                   </div>
                 </div>
+
               </div>
             </div>
 
             <div className="col-lg-6">
               <div className="about-content">
+
                 <span>ABOUT KAAM</span>
                 <h2>Connecting Skills with Opportunities</h2>
 
@@ -246,9 +259,10 @@ function Home() {
                   connect with people and get started.
                 </p>
 
-                <a href="#get-started" className="btn btn-primary mt-3">
+                <Link to="/signup" className="btn btn-primary mt-3">
                   Get Started <FaArrowRight className="ms-2" />
-                </a>
+                </Link>
+
               </div>
             </div>
 
@@ -256,17 +270,20 @@ function Home() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* CALL TO ACTION */}
       <section className="cta-section" id="get-started">
         <div className="container text-center">
+
           <h2>Ready to Get Started?</h2>
+
           <p>
             Join KAAM and take your next step towards new opportunities.
           </p>
 
-          <a href="mailto:hello@kaam.com" className="btn btn-light btn-lg">
-            Contact Us <FaArrowRight className="ms-2" />
-          </a>
+          <Link to="/signup" className="btn btn-primary btn-lg">
+            Create Your Account <FaArrowRight className="ms-2" />
+          </Link>
+
         </div>
       </section>
     </>
