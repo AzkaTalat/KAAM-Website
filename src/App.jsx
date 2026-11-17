@@ -9,6 +9,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ClientDashboard from './pages/ClientDashboard';
 import WorkerDashboard from './pages/WorkerDashboard';
+import PostTask from './pages/PostTask';
 
 function App() {
   return (
@@ -22,6 +23,8 @@ function App() {
 
         <Route path="/client-dashboard" element={<ClientDashboard />} />
         <Route path="/worker-dashboard" element={<WorkerDashboard />} />
+
+        <Route path="/post-task" element={<PostTask />} />
       </Routes>
 
       <Footer />
