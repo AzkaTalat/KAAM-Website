@@ -15,7 +15,6 @@ import { Link, useNavigate } from 'react-router-dom';
 function WorkerDashboard() {
   const navigate = useNavigate();
 
-  // Get logged-in user
   const currentUser = JSON.parse(
     localStorage.getItem('kaamCurrentUser') || 'null'
   );
@@ -77,10 +76,7 @@ function WorkerDashboard() {
         : user
     );
 
-    localStorage.setItem(
-      'kaamUsers',
-      JSON.stringify(updatedUsers)
-    );
+    localStorage.setItem('kaamUsers', JSON.stringify(updatedUsers));
 
     navigate('/client-dashboard');
   }
@@ -113,9 +109,9 @@ function WorkerDashboard() {
               <FaBriefcase /> My Jobs
             </a>
 
-            <a href="#available" className="sidebar-link">
+            <Link to="/browse-jobs" className="sidebar-link">
               <FaSearch /> Browse Jobs
-            </a>
+            </Link>
 
             <a href="#offers" className="sidebar-link">
               <FaFileAlt /> My Offers
@@ -129,7 +125,6 @@ function WorkerDashboard() {
               <FaUserCircle /> My Profile
             </a>
 
-            {/* SWITCH MODE */}
             <button
               type="button"
               className="sidebar-link mode-switch-link"
@@ -138,7 +133,6 @@ function WorkerDashboard() {
               <FaExchangeAlt /> Switch to Client
             </button>
 
-            {/* LOGOUT */}
             <button
               type="button"
               className="sidebar-link logout-link"
@@ -240,7 +234,7 @@ function WorkerDashboard() {
 
               <div className="section-title-row">
                 <h4>Recent Jobs</h4>
-                <span>View All</span>
+                <Link to="/browse-jobs">View All</Link>
               </div>
 
               <div className="table-responsive">

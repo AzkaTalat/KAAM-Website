@@ -10,6 +10,7 @@ import Signup from './pages/Signup';
 import ClientDashboard from './pages/ClientDashboard';
 import WorkerDashboard from './pages/WorkerDashboard';
 import PostTask from './pages/PostTask';
+import BrowseJobs from './pages/BrowseJobs';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/worker-dashboard" element={<WorkerDashboard />} />
 
         <Route path="/post-task" element={<PostTask />} />
+        <Route path="/browse-jobs" element={<BrowseJobs />} />
       </Routes>
 
       <Footer />
