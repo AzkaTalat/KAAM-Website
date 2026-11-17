@@ -11,7 +11,6 @@ import {
 function Signup() {
   const navigate = useNavigate();
 
-  const [role, setRole] = useState('client');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -33,10 +32,14 @@ function Signup() {
       return;
     }
 
-    const users = JSON.parse(localStorage.getItem('kaamUsers') || '[]');
+    const users = JSON.parse(
+      localStorage.getItem('kaamUsers') || '[]'
+    );
+
+    const cleanEmail = email.trim().toLowerCase();
 
     const existingUser = users.find(
-      user => user.email.toLowerCase() === email.trim().toLowerCase()
+      user => user.email.toLowerCase() === cleanEmail
     );
 
     if (existingUser) {
@@ -46,12 +49,13 @@ function Signup() {
 
     const newUser = {
       name: name.trim(),
-      email: email.trim().toLowerCase(),
+      email: cleanEmail,
       password: password,
-      role: role
+      role: 'client'
     };
 
     users.push(newUser);
+
     localStorage.setItem('kaamUsers', JSON.stringify(users));
 
     setSuccess('Account created successfully! Redirecting to login...');
@@ -72,12 +76,14 @@ function Signup() {
           </div>
 
           <h2>Create Your Account</h2>
+
           <p className="auth-subtitle">
-            Join KAAM and explore new opportunities.
+            One account for hiring and finding work.
           </p>
 
           <form onSubmit={handleSignup}>
             <label>Full Name</label>
+
             <div className="auth-input">
               <FaUser />
               <input
@@ -89,6 +95,7 @@ function Signup() {
             </div>
 
             <label>Email Address</label>
+
             <div className="auth-input">
               <FaEnvelope />
               <input
@@ -100,6 +107,7 @@ function Signup() {
             </div>
 
             <label>Password</label>
+
             <div className="auth-input">
               <FaLock />
               <input
@@ -110,34 +118,13 @@ function Signup() {
               />
             </div>
 
-            <label className="role-heading">I want to join as:</label>
-
-            <div className="role-options">
-              <button
-                type="button"
-                className={role === 'client' ? 'role-option selected' : 'role-option'}
-                onClick={() => setRole('client')}
-              >
-                <FaUser />
-                Client
-                <small>Hire skilled workers</small>
-              </button>
-
-              <button
-                type="button"
-                className={role === 'worker' ? 'role-option selected' : 'role-option'}
-                onClick={() => setRole('worker')}
-              >
-                <FaBriefcase />
-                Worker
-                <small>Find jobs and work</small>
-              </button>
-            </div>
-
             {error && <p className="auth-message">{error}</p>}
             {success && <p className="auth-success">{success}</p>}
 
-            <button type="submit" className="btn btn-primary w-100 auth-btn">
+            <button
+              type="submit"
+              className="btn btn-primary w-100 auth-btn"
+            >
               Create Account
             </button>
           </form>
@@ -146,9 +133,6 @@ function Signup() {
             Already have an account? <Link to="/login">Login</Link>
           </p>
 
-          <p className="selected-role">
-            Selected account type: <strong>{role}</strong>
-          </p>
         </div>
       </div>
     </section>

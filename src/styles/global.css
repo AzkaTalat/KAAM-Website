@@ -951,3 +951,74 @@ a {
     font-size: 21px;
   }
 }
+
+/* DASHBOARD BUTTON FIXES */
+
+/* Post a Task button */
+.dashboard-welcome .btn-light {
+  background: var(--kaam-green) !important;
+  border: 1px solid var(--kaam-green) !important;
+  color: white !important;
+  padding: 12px 20px;
+  border-radius: 10px;
+}
+
+.dashboard-welcome .btn-light:hover {
+  background: #0B8056 !important;
+  border-color: #0B8056 !important;
+  color: white !important;
+}
+
+/* Sidebar links and logout button */
+.dashboard-sidebar .sidebar-link {
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+  justify-content: flex-start;
+}
+
+.dashboard-sidebar .logout-link {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-top: 35px;
+  padding: 13px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #DDEAE4;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.dashboard-sidebar .logout-link:hover {
+  background: var(--kaam-green);
+  color: white;
+}
+
+/* SIDEBAR MODE SWITCH BUTTON */
+
+.dashboard-sidebar .mode-switch-link {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(15, 157, 106, 0.15);
+  color: #ffffff;
+  padding: 13px 12px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.dashboard-sidebar .mode-switch-link:hover {
+  background: var(--kaam-green);
+  color: #ffffff;
+  border-color: var(--kaam-green);
+}

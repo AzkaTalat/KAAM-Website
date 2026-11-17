@@ -3,16 +3,25 @@ import {
   FaBriefcase,
   FaClipboardList,
   FaMoneyBillWave,
-  FaCheckCircle,
   FaSearch,
   FaBell,
   FaUserCircle,
-  FaFileAlt
+  FaFileAlt,
+  FaExchangeAlt
 } from 'react-icons/fa';
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function WorkerDashboard() {
+  const navigate = useNavigate();
+
+  // Get logged-in user
+  const currentUser = JSON.parse(
+    localStorage.getItem('kaamCurrentUser') || 'null'
+  );
+
+  const workerName = currentUser?.name || 'Worker';
+
   const stats = [
     { title: 'Available Jobs', value: '24', icon: <FaSearch /> },
     { title: 'Active Jobs', value: '03', icon: <FaBriefcase /> },
@@ -21,10 +30,66 @@ function WorkerDashboard() {
   ];
 
   const jobs = [
-    { title: 'Website Development', client: 'ABC Company', budget: 'Rs. 25,000', status: 'In Progress' },
-    { title: 'Graphic Design', client: 'Creative Studio', budget: 'Rs. 8,000', status: 'Pending' },
-    { title: 'Landing Page Design', client: 'Digital Agency', budget: 'Rs. 12,000', status: 'Completed' }
+    {
+      title: 'Website Development',
+      client: 'ABC Company',
+      budget: 'Rs. 25,000',
+      status: 'In Progress'
+    },
+    {
+      title: 'Graphic Design',
+      client: 'Creative Studio',
+      budget: 'Rs. 8,000',
+      status: 'Pending'
+    },
+    {
+      title: 'Landing Page Design',
+      client: 'Digital Agency',
+      budget: 'Rs. 12,000',
+      status: 'Completed'
+    }
   ];
+
+  // Switch to Client Mode
+  function switchToClient() {
+    if (!currentUser) {
+      navigate('/login');
+      return;
+    }
+
+    const updatedUser = {
+      ...currentUser,
+      activeMode: 'client'
+    };
+
+    localStorage.setItem(
+      'kaamCurrentUser',
+      JSON.stringify(updatedUser)
+    );
+
+    const users = JSON.parse(
+      localStorage.getItem('kaamUsers') || '[]'
+    );
+
+    const updatedUsers = users.map(user =>
+      user.email === currentUser.email
+        ? { ...user, activeMode: 'client' }
+        : user
+    );
+
+    localStorage.setItem(
+      'kaamUsers',
+      JSON.stringify(updatedUsers)
+    );
+
+    navigate('/client-dashboard');
+  }
+
+  // Logout
+  function handleLogout() {
+    localStorage.removeItem('kaamCurrentUser');
+    navigate('/login');
+  }
 
   return (
     <div className="dashboard-page">
@@ -33,7 +98,10 @@ function WorkerDashboard() {
 
           {/* SIDEBAR */}
           <aside className="col-lg-2 dashboard-sidebar">
-            <h4><FaBriefcase /> KAAM.</h4>
+
+            <h4>
+              <FaBriefcase /> KAAM.
+            </h4>
 
             <p className="sidebar-label">WORKER MENU</p>
 
@@ -61,14 +129,30 @@ function WorkerDashboard() {
               <FaUserCircle /> My Profile
             </a>
 
-            <Link to="/" className="sidebar-link logout-link">
+            {/* SWITCH MODE */}
+            <button
+              type="button"
+              className="sidebar-link mode-switch-link"
+              onClick={switchToClient}
+            >
+              <FaExchangeAlt /> Switch to Client
+            </button>
+
+            {/* LOGOUT */}
+            <button
+              type="button"
+              className="sidebar-link logout-link"
+              onClick={handleLogout}
+            >
               Log Out
-            </Link>
+            </button>
+
           </aside>
 
           {/* MAIN CONTENT */}
           <main className="col-lg-10 dashboard-main" id="overview">
 
+            {/* TOPBAR */}
             <div className="dashboard-topbar">
               <div>
                 <h3>Worker Dashboard</h3>
@@ -78,21 +162,27 @@ function WorkerDashboard() {
               <div className="dashboard-user">
                 <FaBell />
                 <FaUserCircle />
-                <span>Worker</span>
+                <span>{workerName}</span>
               </div>
             </div>
 
-            {/* WELCOME */}
+            {/* WELCOME SECTION */}
             <div className="dashboard-welcome worker-welcome">
+
               <div>
                 <span>WORKER PANEL</span>
-                <h2>Welcome to Your Workspace!</h2>
-                <p>Discover jobs, submit offers and grow your career.</p>
+
+                <h2>Welcome, {workerName}!</h2>
+
+                <p>
+                  Discover jobs, submit offers and grow your career.
+                </p>
               </div>
 
               <Link to="/browse-jobs" className="btn btn-light">
                 <FaSearch /> Find Jobs
               </Link>
+
             </div>
 
             {/* STATISTICS */}
@@ -100,9 +190,15 @@ function WorkerDashboard() {
               {stats.map((item, index) => (
                 <div className="col-sm-6 col-xl-3" key={index}>
                   <div className="stat-card">
-                    <div className="stat-icon">{item.icon}</div>
+
+                    <div className="stat-icon">
+                      {item.icon}
+                    </div>
+
                     <p>{item.title}</p>
+
                     <h3>{item.value}</h3>
+
                   </div>
                 </div>
               ))}
@@ -110,9 +206,11 @@ function WorkerDashboard() {
 
             {/* QUICK ACTIONS */}
             <div className="dashboard-section">
+
               <h4>Quick Actions</h4>
 
               <div className="row g-3">
+
                 <div className="col-md-4">
                   <Link to="/browse-jobs" className="quick-action">
                     <FaSearch />
@@ -133,11 +231,13 @@ function WorkerDashboard() {
                     <span>View Earnings</span>
                   </a>
                 </div>
+
               </div>
             </div>
 
             {/* RECENT JOBS */}
             <div className="dashboard-section" id="jobs">
+
               <div className="section-title-row">
                 <h4>Recent Jobs</h4>
                 <span>View All</span>
@@ -145,6 +245,7 @@ function WorkerDashboard() {
 
               <div className="table-responsive">
                 <table className="table dashboard-table">
+
                   <thead>
                     <tr>
                       <th>Job Title</th>
@@ -161,25 +262,33 @@ function WorkerDashboard() {
                         <td>{job.client}</td>
                         <td>{job.budget}</td>
                         <td>
-                          <span className={`task-status ${job.status.toLowerCase().replace(' ', '-')}`}>
+                          <span
+                            className={`task-status ${job.status.toLowerCase().replace(' ', '-')}`}
+                          >
                             {job.status}
                           </span>
                         </td>
                       </tr>
                     ))}
                   </tbody>
+
                 </table>
               </div>
             </div>
 
+            {/* AVAILABLE JOBS */}
             <div className="dashboard-section" id="available">
+
               <h4>Explore Available Jobs</h4>
+
               <p className="text-secondary">
                 Find projects that match your skills and interests.
               </p>
+
               <Link to="/browse-jobs" className="btn btn-primary">
                 Browse Jobs
               </Link>
+
             </div>
 
           </main>

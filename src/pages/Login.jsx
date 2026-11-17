@@ -23,7 +23,9 @@ function Login() {
       return;
     }
 
-    const users = JSON.parse(localStorage.getItem('kaamUsers') || '[]');
+    const users = JSON.parse(
+      localStorage.getItem('kaamUsers') || '[]'
+    );
 
     const matchedUser = users.find(
       user =>
@@ -36,16 +38,24 @@ function Login() {
       return;
     }
 
-    localStorage.setItem('kaamCurrentUser', JSON.stringify({
+    const activeMode = matchedUser.activeMode || matchedUser.role || 'client';
+
+    const currentUser = {
       name: matchedUser.name,
       email: matchedUser.email,
-      role: matchedUser.role
-    }));
+      role: matchedUser.role || 'client',
+      activeMode: activeMode
+    };
 
-    if (matchedUser.role === 'client') {
-      navigate('/client-dashboard');
-    } else {
+    localStorage.setItem(
+      'kaamCurrentUser',
+      JSON.stringify(currentUser)
+    );
+
+    if (activeMode === 'worker') {
       navigate('/worker-dashboard');
+    } else {
+      navigate('/client-dashboard');
     }
   }
 
@@ -60,12 +70,14 @@ function Login() {
           </div>
 
           <h2>Welcome Back!</h2>
+
           <p className="auth-subtitle">
-            Login to continue to your account.
+            Login to continue to your KAAM account.
           </p>
 
           <form onSubmit={handleLogin}>
             <label>Email Address</label>
+
             <div className="auth-input">
               <FaEnvelope />
               <input
@@ -77,6 +89,7 @@ function Login() {
             </div>
 
             <label>Password</label>
+
             <div className="auth-input">
               <FaLock />
               <input
@@ -89,7 +102,10 @@ function Login() {
 
             {error && <p className="auth-message">{error}</p>}
 
-            <button type="submit" className="btn btn-primary w-100 auth-btn">
+            <button
+              type="submit"
+              className="btn btn-primary w-100 auth-btn"
+            >
               Login
             </button>
           </form>
