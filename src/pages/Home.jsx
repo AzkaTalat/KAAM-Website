@@ -1,4 +1,5 @@
 
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   FaSearch,
@@ -15,6 +16,9 @@ import {
 } from 'react-icons/fa';
 
 function Home() {
+  const [searchText, setSearchText] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+
   const categories = [
     {
       icon: <FaLaptopCode />,
@@ -37,6 +41,25 @@ function Home() {
       description: 'Digital marketing and social media services'
     }
   ];
+
+  const filteredCategories = categories.filter(category =>
+    (category.title + ' ' + category.description)
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
+  );
+
+  function handleSearch(e) {
+    e.preventDefault();
+    setSearchQuery(searchText.trim());
+    document.getElementById('categories')?.scrollIntoView({
+      behavior: 'smooth'
+    });
+  }
+
+  function clearSearch() {
+    setSearchText('');
+    setSearchQuery('');
+  }
 
   return (
     <>
@@ -93,17 +116,24 @@ function Home() {
                   </div>
                 </div>
 
-                <div className="search-box">
-                  <FaSearch />
-                  <input
-                    type="text"
-                    placeholder="Search jobs or services..."
-                  />
-                </div>
+                <form onSubmit={handleSearch}>
+                  <div className="search-box">
+                    <FaSearch />
+                    <input
+                      type="text"
+                      placeholder="Search jobs or services..."
+                      value={searchText}
+                      onChange={e => setSearchText(e.target.value)}
+                    />
+                  </div>
 
-                <Link to="/signup" className="btn btn-primary w-100 mt-3">
-                  Explore Opportunities
-                </Link>
+                  <button
+                    type="submit"
+                    className="btn btn-primary w-100 mt-3"
+                  >
+                    Search Opportunities
+                  </button>
+                </form>
 
                 <div className="mini-info">
                   <div>
@@ -130,32 +160,61 @@ function Home() {
 
           <div className="section-heading text-center">
             <span>EXPLORE OPPORTUNITIES</span>
-            <h2>Popular Categories</h2>
+            <h2>
+              {searchQuery ? 'Search Results' : 'Popular Categories'}
+            </h2>
+
             <p>
-              Discover services and opportunities that match your skills.
+              {searchQuery
+                ? `Results for "${searchQuery}"`
+                : 'Discover services and opportunities that match your skills.'}
             </p>
           </div>
 
-          <div className="row g-4 mt-3">
-            {categories.map((category, index) => (
-              <div className="col-md-6 col-lg-3" key={index}>
-                <div className="category-card">
+          {filteredCategories.length > 0 ? (
+            <div className="row g-4 mt-3">
+              {filteredCategories.map((category, index) => (
+                <div className="col-md-6 col-lg-3" key={index}>
+                  <div className="category-card">
 
-                  <div className="category-icon">
-                    {category.icon}
+                    <div className="category-icon">
+                      {category.icon}
+                    </div>
+
+                    <h5>{category.title}</h5>
+                    <p>{category.description}</p>
+
+                    <Link to="/signup">
+                      Explore <FaArrowRight />
+                    </Link>
+
                   </div>
-
-                  <h5>{category.title}</h5>
-                  <p>{category.description}</p>
-
-                  <Link to="/signup">
-                    Explore <FaArrowRight />
-                  </Link>
-
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center mt-4">
+              <h4>No results found</h4>
+              <p>Try searching for Technology, Design, Home Services or Marketing.</p>
+              <button
+                className="btn btn-primary"
+                onClick={clearSearch}
+              >
+                Clear Search
+              </button>
+            </div>
+          )}
+
+          {searchQuery && filteredCategories.length > 0 && (
+            <div className="text-center mt-4">
+              <button
+                className="btn btn-outline-primary"
+                onClick={clearSearch}
+              >
+                Clear Search
+              </button>
+            </div>
+          )}
 
         </div>
       </section>
