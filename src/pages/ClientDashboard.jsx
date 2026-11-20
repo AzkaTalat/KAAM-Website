@@ -1,4 +1,6 @@
 
+import { useEffect, useState } from 'react';
+
 import {
   FaBriefcase,
   FaClipboardList,
@@ -8,7 +10,9 @@ import {
   FaSearch,
   FaBell,
   FaUserCircle,
-  FaExchangeAlt
+  FaExchangeAlt,
+  FaCheck,
+  FaTimes
 } from 'react-icons/fa';
 
 import { Link, useNavigate } from 'react-router-dom';
@@ -23,11 +27,70 @@ function ClientDashboard() {
 
   const clientName = currentUser?.name || 'Client';
 
+  // Received Offers
+  const [offers, setOffers] = useState([]);
+
+  useEffect(() => {
+    const allOffers = JSON.parse(
+      localStorage.getItem('kaamOffers') || '[]'
+    );
+
+    const clientOffers = allOffers.filter(
+      offer =>
+        offer.clientEmail?.toLowerCase() ===
+        currentUser?.email?.toLowerCase()
+    );
+
+    setOffers(clientOffers);
+  }, [currentUser?.email]);
+
+  // Accept or Reject Offer
+  function updateOfferStatus(offerId, newStatus) {
+    const allOffers = JSON.parse(
+      localStorage.getItem('kaamOffers') || '[]'
+    );
+
+    const updatedOffers = allOffers.map(offer =>
+      offer.id === offerId
+        ? { ...offer, status: newStatus }
+        : offer
+    );
+
+    localStorage.setItem(
+      'kaamOffers',
+      JSON.stringify(updatedOffers)
+    );
+
+    setOffers(
+      updatedOffers.filter(
+        offer =>
+          offer.clientEmail?.toLowerCase() ===
+          currentUser?.email?.toLowerCase()
+      )
+    );
+  }
+
   const stats = [
-    { title: 'Posted Tasks', value: '08', icon: <FaClipboardList /> },
-    { title: 'Active Tasks', value: '03', icon: <FaBriefcase /> },
-    { title: 'Total Offers', value: '12', icon: <FaFileAlt /> },
-    { title: 'Hired Workers', value: '05', icon: <FaUsers /> }
+    {
+      title: 'Posted Tasks',
+      value: '08',
+      icon: <FaClipboardList />
+    },
+    {
+      title: 'Active Tasks',
+      value: '03',
+      icon: <FaBriefcase />
+    },
+    {
+      title: 'Total Offers',
+      value: String(offers.length).padStart(2, '0'),
+      icon: <FaFileAlt />
+    },
+    {
+      title: 'Hired Workers',
+      value: '05',
+      icon: <FaUsers />
+    }
   ];
 
   const tasks = [
@@ -269,6 +332,145 @@ function ClientDashboard() {
 
                 </table>
               </div>
+            </div>
+
+            {/* RECEIVED OFFERS */}
+            <div className="dashboard-section" id="offers">
+
+              <div className="section-title-row">
+                <h4>Received Offers</h4>
+                <span>{offers.length} Offers</span>
+              </div>
+
+              {offers.length === 0 ? (
+
+                <div className="card border-0 shadow-sm p-4 text-center">
+                  <FaFileAlt
+                    size={35}
+                    className="mx-auto mb-3"
+                    style={{ color: '#0F9D6A' }}
+                  />
+
+                  <h5>No Offers Received Yet</h5>
+
+                  <p className="text-secondary mb-0">
+                    Offers submitted by workers for your tasks
+                    will appear here.
+                  </p>
+                </div>
+
+              ) : (
+
+                <div className="row g-4">
+
+                  {offers.map(offer => (
+
+                    <div className="col-12" key={offer.id}>
+
+                      <div className="card border-0 shadow-sm p-4">
+
+                        <div className="d-flex justify-content-between align-items-start flex-wrap gap-3">
+
+                          <div>
+                            <h5 className="fw-bold mb-1">
+                              {offer.jobTitle}
+                            </h5>
+
+                            <p className="text-secondary mb-0">
+                              Offer from {offer.workerName}
+                            </p>
+                          </div>
+
+                          <span
+                            className={`badge ${
+                              offer.status === 'Accepted'
+                                ? 'bg-success'
+                                : offer.status === 'Rejected'
+                                ? 'bg-danger'
+                                : 'bg-warning text-dark'
+                            }`}
+                          >
+                            {offer.status || 'Pending'}
+                          </span>
+
+                        </div>
+
+                        <hr />
+
+                        <p className="mb-2">
+                          <strong>Worker Name:</strong>{' '}
+                          {offer.workerName}
+                        </p>
+
+                        <p className="mb-2">
+                          <strong>Worker Email:</strong>{' '}
+                          {offer.workerEmail}
+                        </p>
+
+                        <h5 className="mb-3">
+                          <strong>Proposed Amount:</strong>{' '}
+                          <span style={{ color: '#0F9D6A' }}>
+                            PKR {Number(offer.amount).toLocaleString()}
+                          </span>
+                        </h5>
+
+                        <div
+                          className="p-3 rounded mb-3"
+                          style={{ background: '#E8F5EE' }}
+                        >
+                          <strong>Cover Message</strong>
+
+                          <p className="mb-0 mt-2">
+                            {offer.message}
+                          </p>
+                        </div>
+
+                        {(!offer.status || offer.status === 'Pending') ? (
+
+                          <div className="d-flex gap-2 flex-wrap">
+
+                            <button
+                              type="button"
+                              className="btn btn-success"
+                              onClick={() =>
+                                updateOfferStatus(offer.id, 'Accepted')
+                              }
+                            >
+                              <FaCheck className="me-2" />
+                              Accept Offer
+                            </button>
+
+                            <button
+                              type="button"
+                              className="btn btn-outline-danger"
+                              onClick={() =>
+                                updateOfferStatus(offer.id, 'Rejected')
+                              }
+                            >
+                              <FaTimes className="me-2" />
+                              Reject Offer
+                            </button>
+
+                          </div>
+
+                        ) : (
+
+                          <p className="text-secondary mb-0">
+                            You have {offer.status.toLowerCase()} this offer.
+                          </p>
+
+                        )}
+
+                      </div>
+
+                    </div>
+
+                  ))}
+
+                </div>
+
+              )}
+
             </div>
 
             {/* BROWSE WORKERS */}
