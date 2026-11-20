@@ -1,4 +1,6 @@
 
+import { useEffect, useState } from 'react';
+
 import {
   FaBriefcase,
   FaClipboardList,
@@ -21,11 +23,44 @@ function WorkerDashboard() {
 
   const workerName = currentUser?.name || 'Worker';
 
+  // Worker submitted offers
+  const [offers, setOffers] = useState([]);
+
+  useEffect(() => {
+    const allOffers = JSON.parse(
+      localStorage.getItem('kaamOffers') || '[]'
+    );
+
+    const workerOffers = allOffers.filter(
+      offer =>
+        offer.workerEmail?.toLowerCase() ===
+        currentUser?.email?.toLowerCase()
+    );
+
+    setOffers(workerOffers);
+  }, [currentUser?.email]);
+
   const stats = [
-    { title: 'Available Jobs', value: '24', icon: <FaSearch /> },
-    { title: 'Active Jobs', value: '03', icon: <FaBriefcase /> },
-    { title: 'Submitted Offers', value: '08', icon: <FaFileAlt /> },
-    { title: 'Total Earnings', value: 'Rs. 45K', icon: <FaMoneyBillWave /> }
+    {
+      title: 'Available Jobs',
+      value: '24',
+      icon: <FaSearch />
+    },
+    {
+      title: 'Active Jobs',
+      value: '03',
+      icon: <FaBriefcase />
+    },
+    {
+      title: 'Submitted Offers',
+      value: String(offers.length).padStart(2, '0'),
+      icon: <FaFileAlt />
+    },
+    {
+      title: 'Total Earnings',
+      value: 'Rs. 45K',
+      icon: <FaMoneyBillWave />
+    }
   ];
 
   const jobs = [
@@ -76,7 +111,10 @@ function WorkerDashboard() {
         : user
     );
 
-    localStorage.setItem('kaamUsers', JSON.stringify(updatedUsers));
+    localStorage.setItem(
+      'kaamUsers',
+      JSON.stringify(updatedUsers)
+    );
 
     navigate('/client-dashboard');
   }
@@ -270,6 +308,112 @@ function WorkerDashboard() {
               </div>
             </div>
 
+            {/* MY OFFERS */}
+            <div className="dashboard-section" id="offers">
+
+              <div className="section-title-row">
+                <h4>My Submitted Offers</h4>
+                <span>{offers.length} Offers</span>
+              </div>
+
+              {offers.length === 0 ? (
+
+                <div className="card border-0 shadow-sm p-4 text-center">
+
+                  <FaFileAlt
+                    size={35}
+                    className="mx-auto mb-3"
+                    style={{ color: '#0F9D6A' }}
+                  />
+
+                  <h5>No Offers Submitted Yet</h5>
+
+                  <p className="text-secondary mb-3">
+                    Your submitted job offers will appear here.
+                  </p>
+
+                  <Link
+                    to="/browse-jobs"
+                    className="btn btn-primary mx-auto"
+                  >
+                    Browse Jobs
+                  </Link>
+
+                </div>
+
+              ) : (
+
+                <div className="row g-4">
+
+                  {offers.map(offer => (
+
+                    <div className="col-12" key={offer.id}>
+
+                      <div className="card border-0 shadow-sm p-4">
+
+                        <div className="d-flex justify-content-between align-items-start flex-wrap gap-3">
+
+                          <div>
+                            <h5 className="fw-bold mb-1">
+                              {offer.jobTitle}
+                            </h5>
+
+                            <p className="text-secondary mb-0">
+                              Client: {offer.clientName}
+                            </p>
+                          </div>
+
+                          <span
+                            className={`badge ${
+                              offer.status === 'Accepted'
+                                ? 'bg-success'
+                                : offer.status === 'Rejected'
+                                ? 'bg-danger'
+                                : 'bg-warning text-dark'
+                            }`}
+                          >
+                            {offer.status || 'Pending'}
+                          </span>
+
+                        </div>
+
+                        <hr />
+
+                        <h5 className="mb-3">
+                          <strong>Your Offer:</strong>{' '}
+                          <span style={{ color: '#0F9D6A' }}>
+                            PKR {Number(offer.amount).toLocaleString()}
+                          </span>
+                        </h5>
+
+                        <div
+                          className="p-3 rounded mb-3"
+                          style={{ background: '#E8F5EE' }}
+                        >
+                          <strong>Your Cover Message</strong>
+
+                          <p className="mb-0 mt-2">
+                            {offer.message}
+                          </p>
+                        </div>
+
+                        <p className="text-secondary mb-0">
+                          <strong>Submitted:</strong>{' '}
+                          {new Date(offer.submittedAt).toLocaleDateString()}
+                        </p>
+
+                      </div>
+
+                    </div>
+
+                  ))}
+
+                </div>
+
+              )}
+
+            </div>
+
             {/* AVAILABLE JOBS */}
             <div className="dashboard-section" id="available">
 
@@ -282,6 +426,17 @@ function WorkerDashboard() {
               <Link to="/browse-jobs" className="btn btn-primary">
                 Browse Jobs
               </Link>
+
+            </div>
+
+            {/* EARNINGS */}
+            <div className="dashboard-section" id="earnings">
+
+              <h4>Earnings</h4>
+
+              <p className="text-secondary">
+                Your earnings summary will be available here.
+              </p>
 
             </div>
 
