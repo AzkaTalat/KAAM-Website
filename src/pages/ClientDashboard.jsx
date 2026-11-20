@@ -20,17 +20,31 @@ import { Link, useNavigate } from 'react-router-dom';
 function ClientDashboard() {
   const navigate = useNavigate();
 
-  // Get logged-in user
   const currentUser = JSON.parse(
     localStorage.getItem('kaamCurrentUser') || 'null'
   );
 
   const clientName = currentUser?.name || 'Client';
 
-  // Received Offers
+  const [tasks, setTasks] = useState([]);
   const [offers, setOffers] = useState([]);
 
+  // Load this client's tasks and offers
   useEffect(() => {
+    if (!currentUser?.email) return;
+
+    const allTasks = JSON.parse(
+      localStorage.getItem('kaamTasks') || '[]'
+    );
+
+    const clientTasks = allTasks.filter(
+      task =>
+        task.clientEmail?.toLowerCase() ===
+        currentUser.email.toLowerCase()
+    );
+
+    setTasks(clientTasks);
+
     const allOffers = JSON.parse(
       localStorage.getItem('kaamOffers') || '[]'
     );
@@ -38,13 +52,13 @@ function ClientDashboard() {
     const clientOffers = allOffers.filter(
       offer =>
         offer.clientEmail?.toLowerCase() ===
-        currentUser?.email?.toLowerCase()
+        currentUser.email.toLowerCase()
     );
 
     setOffers(clientOffers);
   }, [currentUser?.email]);
 
-  // Accept or Reject Offer
+  // Update offer status
   function updateOfferStatus(offerId, newStatus) {
     const allOffers = JSON.parse(
       localStorage.getItem('kaamOffers') || '[]'
@@ -69,50 +83,6 @@ function ClientDashboard() {
       )
     );
   }
-
-  const stats = [
-    {
-      title: 'Posted Tasks',
-      value: '08',
-      icon: <FaClipboardList />
-    },
-    {
-      title: 'Active Tasks',
-      value: '03',
-      icon: <FaBriefcase />
-    },
-    {
-      title: 'Total Offers',
-      value: String(offers.length).padStart(2, '0'),
-      icon: <FaFileAlt />
-    },
-    {
-      title: 'Hired Workers',
-      value: '05',
-      icon: <FaUsers />
-    }
-  ];
-
-  const tasks = [
-    {
-      title: 'Website Development',
-      category: 'Technology',
-      budget: 'Rs. 25,000',
-      status: 'In Progress'
-    },
-    {
-      title: 'Logo Design',
-      category: 'Design',
-      budget: 'Rs. 5,000',
-      status: 'Pending'
-    },
-    {
-      title: 'Mobile App UI Design',
-      category: 'Design',
-      budget: 'Rs. 15,000',
-      status: 'Completed'
-    }
-  ];
 
   // Switch to Worker Mode
   function switchToWorker() {
@@ -155,6 +125,36 @@ function ClientDashboard() {
     navigate('/login');
   }
 
+  const activeTasks = tasks.filter(
+    task => task.status === 'Open' ||
+            task.status === 'In Progress'
+  );
+
+  const stats = [
+    {
+      title: 'Posted Tasks',
+      value: String(tasks.length).padStart(2, '0'),
+      icon: <FaClipboardList />
+    },
+    {
+      title: 'Active Tasks',
+      value: String(activeTasks.length).padStart(2, '0'),
+      icon: <FaBriefcase />
+    },
+    {
+      title: 'Total Offers',
+      value: String(offers.length).padStart(2, '0'),
+      icon: <FaFileAlt />
+    },
+    {
+      title: 'Hired Workers',
+      value: String(
+        offers.filter(offer => offer.status === 'Accepted').length
+      ).padStart(2, '0'),
+      icon: <FaUsers />
+    }
+  ];
+
   return (
     <div className="dashboard-page">
       <div className="container-fluid">
@@ -189,7 +189,6 @@ function ClientDashboard() {
               <FaUserCircle /> My Profile
             </a>
 
-            {/* SWITCH MODE */}
             <button
               type="button"
               className="sidebar-link mode-switch-link"
@@ -198,7 +197,6 @@ function ClientDashboard() {
               <FaExchangeAlt /> Switch to Worker
             </button>
 
-            {/* LOGOUT */}
             <button
               type="button"
               className="sidebar-link logout-link"
@@ -293,45 +291,98 @@ function ClientDashboard() {
               </div>
             </div>
 
-            {/* RECENT TASKS */}
+            {/* MY TASKS */}
             <div className="dashboard-section" id="tasks">
 
               <div className="section-title-row">
-                <h4>Recent Tasks</h4>
-                <span>View All</span>
+                <h4>My Posted Tasks</h4>
+
+                <Link to="/post-task">
+                  <FaPlus className="me-1" />
+                  Post New Task
+                </Link>
               </div>
 
-              <div className="table-responsive">
-                <table className="table dashboard-table">
+              {tasks.length === 0 ? (
 
-                  <thead>
-                    <tr>
-                      <th>Task Name</th>
-                      <th>Category</th>
-                      <th>Budget</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
+                <div className="card border-0 shadow-sm p-4 text-center">
 
-                  <tbody>
-                    {tasks.map((task, index) => (
-                      <tr key={index}>
-                        <td>{task.title}</td>
-                        <td>{task.category}</td>
-                        <td>{task.budget}</td>
-                        <td>
-                          <span
-                            className={`task-status ${task.status.toLowerCase().replace(' ', '-')}`}
-                          >
-                            {task.status}
-                          </span>
-                        </td>
+                  <FaClipboardList
+                    size={35}
+                    className="mx-auto mb-3"
+                    style={{ color: '#0F9D6A' }}
+                  />
+
+                  <h5>No Tasks Posted Yet</h5>
+
+                  <p className="text-secondary">
+                    Your posted tasks will appear here.
+                  </p>
+
+                  <Link
+                    to="/post-task"
+                    className="btn btn-primary mx-auto"
+                  >
+                    <FaPlus className="me-2" />
+                    Post Your First Task
+                  </Link>
+
+                </div>
+
+              ) : (
+
+                <div className="table-responsive">
+                  <table className="table dashboard-table">
+
+                    <thead>
+                      <tr>
+                        <th>Task Name</th>
+                        <th>Category</th>
+                        <th>Budget</th>
+                        <th>Deadline</th>
+                        <th>Status</th>
                       </tr>
-                    ))}
-                  </tbody>
+                    </thead>
 
-                </table>
-              </div>
+                    <tbody>
+                      {tasks.map(task => (
+
+                        <tr key={task.id}>
+
+                          <td className="fw-semibold">
+                            {task.title}
+                          </td>
+
+                          <td>{task.category}</td>
+
+                          <td>
+                            PKR {Number(task.budget).toLocaleString()}
+                          </td>
+
+                          <td>{task.deadline}</td>
+
+                          <td>
+                            <span
+                              className={`task-status ${
+                                (task.status || 'Open')
+                                  .toLowerCase()
+                                  .replace(' ', '-')
+                              }`}
+                            >
+                              {task.status || 'Open'}
+                            </span>
+                          </td>
+
+                        </tr>
+
+                      ))}
+                    </tbody>
+
+                  </table>
+                </div>
+
+              )}
+
             </div>
 
             {/* RECEIVED OFFERS */}
@@ -345,6 +396,7 @@ function ClientDashboard() {
               {offers.length === 0 ? (
 
                 <div className="card border-0 shadow-sm p-4 text-center">
+
                   <FaFileAlt
                     size={35}
                     className="mx-auto mb-3"
@@ -357,6 +409,7 @@ function ClientDashboard() {
                     Offers submitted by workers for your tasks
                     will appear here.
                   </p>
+
                 </div>
 
               ) : (
