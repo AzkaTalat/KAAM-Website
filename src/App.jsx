@@ -11,6 +11,7 @@ import ClientDashboard from './pages/ClientDashboard';
 import WorkerDashboard from './pages/WorkerDashboard';
 import PostTask from './pages/PostTask';
 import BrowseJobs from './pages/BrowseJobs';
+import SendOffer from './pages/SendOffer';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
 
         <Route path="/post-task" element={<PostTask />} />
         <Route path="/browse-jobs" element={<BrowseJobs />} />
+        <Route path="/send-offer" element={<SendOffer />} />
       </Routes>
 
       <Footer />
